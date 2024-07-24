@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using SimpleWebScrapper.Data;
 
 namespace SimpleWebScrapper.Builders
 {
+    /// <summary>
+    /// Builder class for creating ScrapeCriteria objects.
+    /// </summary>
     internal class ScraperCriteriaBuilder
     {
         #region Properties
-        //The data that is required to create a builder is the following
+
+        // Private fields to hold the criteria data
         private string _data;
         private string _regex;
         private RegexOptions _regexOption;
@@ -20,59 +21,81 @@ namespace SimpleWebScrapper.Builders
         #endregion
 
         #region Constructor
-        //
+
+        /// <summary>
+        /// Initializes a new instance of the ScraperCriteriaBuilder class with default values.
+        /// </summary>
         public ScraperCriteriaBuilder()
         {
             SetDefaults();
         }
 
-        //SetDefaults Methods is going to set the default values for the data
+        /// <summary>
+        /// Sets the default values for the builder properties.
+        /// </summary>
         private void SetDefaults()
         {
-            //We are going to set the default value for the data to empty string
             _data = string.Empty;
-            
-            //We are going to set the default value for the regex to empty string
             _regex = string.Empty;
-
-            //We are going to set the default value for the regexOption to None
             _regexOption = RegexOptions.None;
-
-            //We are going to create a new empty list of ScrapeCriteriaPart
             _parts = new List<ScrapeCriteriaPart>();
         }
+
         #endregion
 
         #region Methods
-        //We are going to create a method that is going to make it easier to set the object properties
+
+        /// <summary>
+        /// Sets the data to be scraped.
+        /// </summary>
+        /// <param name="data">The data to be scraped.</param>
+        /// <returns>The current instance of the builder.</returns>
         public ScraperCriteriaBuilder WithData(string data)
         {
             _data = data;
             return this;
         }
-       
+
+        /// <summary>
+        /// Sets the regular expression to be used for scraping.
+        /// </summary>
+        /// <param name="regex">The regular expression string.</param>
+        /// <returns>The current instance of the builder.</returns>
         public ScraperCriteriaBuilder WithRegex(string regex)
         {
             _regex = regex;
             return this;
         }
 
+        /// <summary>
+        /// Sets the regular expression options to be used for scraping.
+        /// </summary>
+        /// <param name="regexOption">The regular expression options.</param>
+        /// <returns>The current instance of the builder.</returns>
         public ScraperCriteriaBuilder WithRegexOption(RegexOptions regexOption)
         {
             _regexOption = regexOption;
             return this;
         }
 
+        /// <summary>
+        /// Builds and returns a new ScrapeCriteria object using the values set in the builder.
+        /// </summary>
+        /// <returns>A new ScrapeCriteria object.</returns>
         public ScrapeCriteria Build()
         {
-            ScrapeCriteria scrapeCriteria = new ScrapeCriteria();
-            scrapeCriteria.Data = _data;
-            scrapeCriteria.Regex = _regex;
-            scrapeCriteria.RegexOption = _regexOption;
-            scrapeCriteria.Parts = _parts;
+            // Create a new ScrapeCriteria object and populate its properties
+            ScrapeCriteria scrapeCriteria = new ScrapeCriteria
+            {
+                Data = _data,
+                Regex = _regex,
+                RegexOption = _regexOption,
+                Parts = _parts
+            };
+
             return scrapeCriteria;
         }
-        #endregion
 
+        #endregion
     }
 }
