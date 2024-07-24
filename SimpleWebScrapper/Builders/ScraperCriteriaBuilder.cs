@@ -65,23 +65,14 @@ namespace SimpleWebScrapper.Builders
 
         public ScrapeCriteria Build()
         {
-            ScrapeCriteria scrapeCriteria = new ScrapeCriteria
-            {
-                Data = _data,
-                Parts = new List<ScrapeCriteriaPart>
-                {
-                    new ScrapeCriteriaPart
-                    {
-                        Regex = _regex,
-                        RegexOption = _regexOption
-                    }
-                }
-            };
-
-
-            #endregion
-
+            ScrapeCriteria scrapeCriteria = new ScrapeCriteria();
+            scrapeCriteria.Data = _data;
+            scrapeCriteria.Regex = _regex;
+            scrapeCriteria.RegexOption = _regexOption;
+            scrapeCriteria.Parts = _parts;
             return scrapeCriteria;
         }
+        #endregion
+
     }
 }
