@@ -66,7 +66,7 @@ namespace SimpleWebScrapper.Builders
             }
         }
 
-        private void ValidateParts(List<ScrapeCriteriaPart> parts)
+        private void ValidateParts(List<ScrapeCriteriaPart>? parts)
         {
             if(parts is null || parts.Count == 0)
             {
@@ -129,27 +129,12 @@ namespace SimpleWebScrapper.Builders
         /// <returns>A new ScrapeCriteria object.</returns>
         public ScrapeCriteria Build()
         {
-            // Validate the properties
-            try {
-                ValidateData(_data);
-                ValidateRegex(_regex);
-                ValidateParts(_parts);
-            }
-            catch (ArgumentException ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-            }
-
-            // Create a new ScrapeCriteria object and populate its properties
-            if(_scrapeCriteria is null)
-            {
-                _scrapeCriteria = new ScrapeCriteria();
-            }
-            _scrapeCriteria.Data = _data;
-            _scrapeCriteria.Regex = _regex;
-            _scrapeCriteria.RegexOption = _regexOption;
-            _scrapeCriteria.Parts = _parts;
-          
+                ScrapeCriteria _scrapeCriteria = new ScrapeCriteria();
+           
+                _scrapeCriteria.Data = (_data is not null) ? _data : "";
+                _scrapeCriteria.Regex =(_regex is not null) ? _regex : "";
+                _scrapeCriteria.RegexOption = _regexOption;
+                _scrapeCriteria.Parts = (_parts is not null) ? _parts : throw new ArgumentException("Parts cannot be null.");            ;
             return _scrapeCriteria;
         }
 
