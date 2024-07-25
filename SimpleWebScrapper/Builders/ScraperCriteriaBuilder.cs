@@ -49,40 +49,12 @@ namespace SimpleWebScrapper.Builders
         #region Methods
 
         /// <summary>
-        /// Validate the data and regex properties.
-        /// </summary>
-        /// <exception cref="ArgumentException"></exception>
-        private void ValidateData(string? data)
-        {
-            if (string.IsNullOrEmpty(data))
-            {
-                throw new ArgumentException("Data cannot be null.");
-            }
-        }
-        private void ValidateRegex(string? regex) {
-            if (string.IsNullOrEmpty(regex))
-            {
-                throw new ArgumentException("Regex cannot be Empty or null");
-            }
-        }
-
-        private void ValidateParts(List<ScrapeCriteriaPart>? parts)
-        {
-            if(parts is null || parts.Count == 0)
-            {
-                throw new ArgumentException("Parts cannot be null.");
-            }
-        }
-
-
-        /// <summary>
         /// Sets the data to be scraped.
         /// </summary>
         /// <param name="data">The data to be scraped.</param>
         /// <returns>The current instance of the builder.</returns>
         public ScraperCriteriaBuilder WithData(string? data)
         {
-            ValidateData(data);
             _data = data;
             return this;
         }
@@ -94,7 +66,6 @@ namespace SimpleWebScrapper.Builders
         /// <returns>The current instance of the builder.</returns>
         public ScraperCriteriaBuilder WithRegex(string? regex)
         {
-            ValidateRegex(regex);
             _regex = regex;
             return this;
         }
@@ -118,7 +89,6 @@ namespace SimpleWebScrapper.Builders
 
         public ScraperCriteriaBuilder WithParts(ScrapeCriteriaPart scrapeCriteriaPart)
         {
-            ValidateParts(_parts);
             _parts?.Add(scrapeCriteriaPart); //adding the scrape criteria part to the list of parts.
             return this;
         }

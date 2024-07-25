@@ -10,6 +10,7 @@ using SimpleWebScrapper.Data;
 using SimpleWebScrapper.Workers;
 using System.Runtime.CompilerServices;
 using SimpleWebScrapper.Builders;
+using static System.Net.WebRequestMethods;
 
 namespace SimpleWebScrapper
 {
@@ -47,20 +48,21 @@ namespace SimpleWebScrapper
         // <returns>The downloaded HTML content of the specified URL Page.</returns>
 
         static string DownloadContent(string city, string category)
-        {   
+        {
             using (WebClient client = new WebClient())
             {
-                try {
-                    return client.DownloadString($"https://{city.Replace(" ", string.Empty)}.craigslist.org/search/{category}");
-                    // string.Empty to handle the case where the city name has a space in it Like New York.
+                const string Method = "search";
+                try
+                {
+                    return client.DownloadString($"https://{city.Replace(" ", string.Empty)}.craigslist.org/{Method}/{category}");
+                    
                 }
                 catch (WebException ex)
                 {
                     Console.WriteLine($"Error Downloading Content: {ex.Message}");
                     return "";
                 }
-                
-             }
+            }
         }
         #endregion
 
@@ -91,8 +93,71 @@ namespace SimpleWebScrapper
             return scrapeCriteria;
         }
         #endregion
+
+        #region Scraping and Output
+        // <summary>
+        // Scrapes the data from the HTML content using the provided ScrapeCriteria.
+        // </summary>        
+        // <param name="content"> The HTML content to scrape</param>
+        // <param name="scrapeCriteria"> The scrape criteria object.</param>
+        // <returns>A list of scraped elements</returns>
+
+        static List<string> ScrapeData (string content, ScrapeCriteria scrapeCriteria)
+        {
+            Scraper scraper = new Scraper();
+            return scraper.Scrape(scrapeCriteria);
+        }
+
+        // <summary>
+        // Outputs the scraped data to the console.
+        // </summary>
+        // <param name="scrapedElements"> The list scraped data to output.</param>
+        static void PrintScrapedElements(List<string> scrapedElements)
+        {
+            if (scrapedElements == null || !scrapedElements.Any()) //checking if the list is empty or null.
+            {
+                Console.WriteLine("No elements found.");
+            }
+            else
+            {
+                foreach (var element in scrapedElements) //printing the scraped elements.
+                {
+                    Console.WriteLine(element);
+                }
+            }
+        }
+        #endregion
         static void Main(string[] args)
         {
+            bool flag = true;
+            int trial = 1;
+
+            // Get user input for city and category.
+            string city = GetCityInput();
+            string category = GetCategoryInput();
+
+            // Validate user input for city and category. 3 trials allowed.
+            do { 
+                if (string.IsNullOrEmpty(city) || string.IsNullOrEmpty(category))
+                {
+                    Console.WriteLine($"Trial {trial}: City or Category is invalid.");
+                    Console.ReadLine();
+                    flag = false;
+                }
+                trial++;
+            } while (!flag || trial <= 3);
+
+            // Download the content of the specified URL page.
+            string content = DownloadContent(city, category);
+
+            // Create a ScrapeCriteria using the Builder pattern.
+            ScrapeCriteria scrapeCriteria = CreateScrapeCriteria(content, @"<a href=\""(.*?)\"" data-id=\""(.*?)\"" class=\""result-title hdrlnk\"">(.*?)</a>");
+
+            // Scrape the data from the HTML content using the Scraper Class.
+            List<string> scrapedElements = ScrapeData(content, scrapeCriteria);
+
+            // Output the scraped data to the console.
+            PrintScrapedElements(scrapedElements);
         }
     }
 }
