@@ -13,10 +13,12 @@ namespace SimpleWebScrapper.Builders
         #region Properties
 
         // Private fields to hold the criteria data
-        private string _data;
-        private string _regex;
+        private string? _data;
+        private string? _regex;
         private RegexOptions _regexOption;
-        private List<ScrapeCriteriaPart> _parts;
+        private List<ScrapeCriteriaPart>? _parts;
+        private ScrapeCriteria? _scrapeCriteria;
+
 
         #endregion
 
@@ -27,7 +29,7 @@ namespace SimpleWebScrapper.Builders
         /// </summary>
         public ScraperCriteriaBuilder()
         {
-            SetDefaults();
+           SetDefaults();
         }
 
         /// <summary>
@@ -39,6 +41,7 @@ namespace SimpleWebScrapper.Builders
             _regex = string.Empty;
             _regexOption = RegexOptions.None;
             _parts = new List<ScrapeCriteriaPart>();
+            _scrapeCriteria = null;
         }
 
         #endregion
@@ -46,12 +49,40 @@ namespace SimpleWebScrapper.Builders
         #region Methods
 
         /// <summary>
+        /// Validate the data and regex properties.
+        /// </summary>
+        /// <exception cref="ArgumentException"></exception>
+        private void ValidateData(string? data)
+        {
+            if (string.IsNullOrEmpty(data))
+            {
+                throw new ArgumentException("Data cannot be null.");
+            }
+        }
+        private void ValidateRegex(string? regex) {
+            if (string.IsNullOrEmpty(regex))
+            {
+                throw new ArgumentException("Regex cannot be Empty or null");
+            }
+        }
+
+        private void ValidateParts(List<ScrapeCriteriaPart> parts)
+        {
+            if(parts is null || parts.Count == 0)
+            {
+                throw new ArgumentException("Parts cannot be null.");
+            }
+        }
+
+
+        /// <summary>
         /// Sets the data to be scraped.
         /// </summary>
         /// <param name="data">The data to be scraped.</param>
         /// <returns>The current instance of the builder.</returns>
-        public ScraperCriteriaBuilder WithData(string data)
+        public ScraperCriteriaBuilder WithData(string? data)
         {
+            ValidateData(data);
             _data = data;
             return this;
         }
@@ -61,8 +92,9 @@ namespace SimpleWebScrapper.Builders
         /// </summary>
         /// <param name="regex">The regular expression string.</param>
         /// <returns>The current instance of the builder.</returns>
-        public ScraperCriteriaBuilder WithRegex(string regex)
+        public ScraperCriteriaBuilder WithRegex(string? regex)
         {
+            ValidateRegex(regex);
             _regex = regex;
             return this;
         }
@@ -79,21 +111,46 @@ namespace SimpleWebScrapper.Builders
         }
 
         /// <summary>
+        /// Sets the parts of the scrape criteria.
+        /// </summary>
+        /// <param name="parts"></param>
+        /// <returns></returns>
+
+        public ScraperCriteriaBuilder WithParts(ScrapeCriteriaPart scrapeCriteriaPart)
+        {
+            ValidateParts(_parts);
+            _parts?.Add(scrapeCriteriaPart); //adding the scrape criteria part to the list of parts.
+            return this;
+        }
+
+        /// <summary>
         /// Builds and returns a new ScrapeCriteria object using the values set in the builder.
         /// </summary>
         /// <returns>A new ScrapeCriteria object.</returns>
         public ScrapeCriteria Build()
         {
-            // Create a new ScrapeCriteria object and populate its properties
-            ScrapeCriteria scrapeCriteria = new ScrapeCriteria
+            // Validate the properties
+            try {
+                ValidateData(_data);
+                ValidateRegex(_regex);
+                ValidateParts(_parts);
+            }
+            catch (ArgumentException ex)
             {
-                Data = _data,
-                Regex = _regex,
-                RegexOption = _regexOption,
-                Parts = _parts
-            };
+                Console.WriteLine($"Error: {ex.Message}");
+            }
 
-            return scrapeCriteria;
+            // Create a new ScrapeCriteria object and populate its properties
+            if(_scrapeCriteria is null)
+            {
+                _scrapeCriteria = new ScrapeCriteria();
+            }
+            _scrapeCriteria.Data = _data;
+            _scrapeCriteria.Regex = _regex;
+            _scrapeCriteria.RegexOption = _regexOption;
+            _scrapeCriteria.Parts = _parts;
+          
+            return _scrapeCriteria;
         }
 
         #endregion
